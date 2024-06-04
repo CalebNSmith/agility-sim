@@ -3,24 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulation Results</title>
+    <title>POH Dungeon Agility Training Simulation</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Simulation Results</h1>
+        <h1>POH Dungeon Agility Training Simulation</h1>
+        <div class="explanation">
+            <p>
+                The goal of these simulations is to determine what would happen if you had a given number of protect range ticks and just didn't look back until that time has passed.
+            </p>
+            <p>
+                <strong>Hits from Aberrant Spectres:</strong> This represents the number of times you are hit by Aberrant spectres at the slayer tower, which can lower your agility level. Each hit reduces your agility level to floor(currentLevel * 0.4).
+            </p>
+            <p>
+                <strong>Max level:</strong> This is your actual agility level. The simulation accounts for your level passively increasing.
+            </p>
+            <p>
+                <strong>Total ticks:</strong> The number of ticks the simulator will run for.
+            </p>
+            <p>
+                <strong>Number of simulations:</strong> How many times to simulate so we converge on the correct value.
+            </p>
+            <p>
+                <strong>Max row:</strong> To boil it down simply, this will be 3 + number of treasure rooms. Note that you can get 7 max row with 14 rooms on version 1.
+            </p>
+            <p>
+                <strong>Simulation Version:</strong> This is a bit complicated, and Ogie explains it well in his discord #detailed-poh-setup. If you successfully dodge both traps in a row, you are blocked off so you path backwards. For example, you can have 6 max row with only 9 dungeon rooms, but you'd be using version 1, and 6 max row with 14 dungeon rooms, but you'd be using version 2. The additional 5 rooms in that example are used to wrap all the way around to connect a loop for you to path around, so your path is now through more traps, as opposed to version 2, which actually jumps you right to the final row. Just compare them in the calculator to see and make the call yourself about those 5 additional rooms.
+            </p>
+        </div>
         <form id="simulation-form">
-            <label for="initial-level">Initial Level:</label>
-            <input type="number" id="initial-level" value="60" required>
+            <label for="hits-from-spectres">Hits from Aberrant Spectres:</label>
+            <input type="number" id="hits-from-spectres" value="0" required>
 
             <label for="max-level">Max Level:</label>
             <input type="number" id="max-level" value="99" required>
 
             <label for="max-row">Max Row:</label>
-            <input type="number" id="max-row" value="8" required>
+            <input type="number" id="max-row" value="7" required>
 
-            <label for="prayer-duration">Prayer Duration (ticks):</label>
-            <input type="number" id="prayer-duration" value="1500" required>
+            <label for="prayer-level">Prayer Level:</label>
+            <input type="number" id="prayer-level" value="99" required>
+            <small>Note: Prayer level can exceed your actual level using the ancient mace on a dummy (untested: having combat dummy in a dungeon)</small>
+
+            <label for="prayer-bonus">Prayer Equipment Bonus:</label>
+            <input type="number" id="prayer-bonus" value="68" required>
 
             <label for="total-ticks">Total Ticks:</label>
             <input type="number" id="total-ticks" value="6000" required>
@@ -28,14 +55,37 @@
             <label for="simulations">Number of Simulations:</label>
             <input type="number" id="simulations" value="10000" required>
 
+            <label for="version">Simulation Version:</label>
+            <select id="version">
+                <option value="1">Version 1: Subtract one from row after two backward streaks</option>
+                <option value="2">Version 2: Jump to max_row - 1 after two backward streaks, then return to the previous row</option>
+            </select>
+
             <button type="submit">Run Simulation</button>
         </form>
 
         <div id="results">
             <h2>Results</h2>
+            <p id="starting-level"></p>
             <p id="reach-count"></p>
             <p id="experience-gained"></p>
             <p id="reset-count"></p>
+        </div>
+
+        <div class="interpretation">
+            <h2>How to Interpret the Results</h2>
+            <p>
+                <strong>Average times reached past max row:</strong> This indicates the average number of times you were able to pass the maximum row during the simulation. The value is given with a standard deviation to show the variability in the results.
+            </p>
+            <p>
+                <strong>Average experience gained:</strong> This is the average amount of experience points you would gain during the simulation. The value is given with a standard deviation to indicate how much the experience gain can vary.
+            </p>
+            <p>
+                <strong>Average times reset because prayer ran out:</strong> This shows the average number of times your prayer points ran out during the simulation, causing a reset. The standard deviation indicates the variability in the number of resets.
+            </p>
+            <p>
+                By running multiple simulations, we can get a good estimate of what to expect in terms of experience gains and the number of times you can pass the max row within a given number of ticks. The standard deviation values help understand the consistency of the results.
+            </p>
         </div>
     </div>
     <script src="script.js"></script>

@@ -23,7 +23,7 @@ form {
     flex-direction: column;
 }
 
-label, input, button {
+label, input, select, button {
     margin-bottom: 10px;
 }
 
